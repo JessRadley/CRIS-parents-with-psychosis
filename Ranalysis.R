@@ -561,11 +561,9 @@ or<-data.frame(odds_ratio = r$or, ci_l=ci$`2.5 %`, ci_u=ci$`97.5 %`, row.names =
 ###exploratory - add diagnosis back in and see if there is interaction with age##############
 lm5a<-glm(Has_children ~ 1 + Marital_Status_Value + CurrentAge*Diagnosis + Gender_Value + Accommodation + Employment, data = file3, family = binomial)
 summary(lm6a)
-AIC(lm5a) #334
-rsq(lm5a) #0.9270
-rsq(lm5a, adj = T) #0.267
+AIC(lm5a) 
 
-anova(lm5, lm5a, test = "Chisq") #p = 0.118 - favours simpler model (without interaction)
+anova(finallm1, lm5a, test = "Chisq") #p = 0.118 - favours simpler model (without interaction)
 
 ###compare proportions of those with each diagnosis - any child under 18 vs. not
 y%>%count(Diagnosis)
@@ -574,110 +572,3 @@ p%>%filter(Has_children == 1)%>%count(Diagnosis)
 
 #plot age against diagnosis
 ggplot(file1, aes(Diagnosis, CurrentAge)) + geom_boxplot() #whole sample diagnosis vs age
-
-###LINEAR MODELLING - Ward stays predicted by child factors within those with children (n= 2006)######################################
-file2<-file1%>%filter(Has_children == 1)
-
-###MAKENEWVARIABLE ANYUNDER18###################
-y<-file2%>%filter(OU18_1 == "Under"|OU18_2 == "Under"|OU18_3 == "Under"|OU18_4 == "Under"|OU18_5 == "Under"|OU18_6 == "Under"|OU18_7 == "Under"|OU18_8 == "Under"|OU18_9 == "Under"|OU18_10 == "Under"|OU18_11 == "Under"|OU18_12 == "Under")
-AnyUnder18<-rep(1, 740)
-y<-cbind(y, AnyUnder18)
-
-x<-file2%>%filter(OU18_1 == "unknown")
-x<-anti_join(x, y, by = "BRC_ID")
-AnyUnder18<-rep(NA, 148)
-x<-cbind(x, AnyUnder18)
-
-z<-file2%>%filter(OU18_1 == "Over")
-z<-anti_join(z, y, by = "BRC_ID")
-
-AnyUnder18<-rep(0, 1118)
-z<-cbind(z, AnyUnder18)
-
-file2<-rbind(y, x)
-file2<-rbind(file2, z)
-
-file2<-file2%>%arrange(BRC_ID)
-
-####Now modelling
-
-lm1<-glm(wardstay ~ 1 + Marital_Status_Value + CurrentAge + Gender_Value + Ethnicity_Value + Accommodation + Employment + Diagnosis + Smoking + group + No.ofchild + AnyUnder18, data = file2, family = poisson)
-summary(lm1)
-AIC(lm1) #1295
-rsq(lm1) #0.8352
-rsq(lm1, adj = T) #-0.653
-
-#remove currentage
-
-lm2<-glm(wardstay ~ 1 + Marital_Status_Value + Gender_Value + Ethnicity_Value + Accommodation + Employment + Diagnosis + Smoking + group + No.ofchild + AnyUnder18, data = file2, family = poisson)
-summary(lm2)
-AIC(lm2) #1294
-rsq(lm2) #0.8350
-rsq(lm2, adj = T) #-0.646
-
-#remove ethnicity
-lm3<-glm(wardstay ~ 1 + Marital_Status_Value + Gender_Value + Accommodation + Employment + Diagnosis + Smoking + group + No.ofchild + AnyUnder18, data = file2, family = poisson)
-summary(lm3)
-AIC(lm3) #1321
-rsq(lm3) #0.8230
-rsq(lm3, adj = T) #-0.631
-
-#remove no.of child
-lm4<-glm(wardstay ~ 1 + Marital_Status_Value + Gender_Value + Accommodation + Employment + Diagnosis + Smoking + group + AnyUnder18, data = file2, family = poisson)
-summary(lm4)
-AIC(lm4) #1320
-rsq(lm4) #0.8301
-rsq(lm4, adj = T) #-0.622
-
-#remove IMD
-lm5<-glm(wardstay ~ 1 + Marital_Status_Value + AnyUnder18 + Gender_Value + Accommodation + Employment + Diagnosis + Smoking, data = file2, family = poisson)
-summary(lm5)
-AIC(lm5) #1318
-rsq(lm5) #0.8301
-rsq(lm5, adj = T) #-0.614
-
-###odds ratios#########
-r<-round(summary(lm5)[[13]], digits = 4)
-r<-as.data.frame(r, row.names = c("Intercept", "Divorced", "Married", "AnyUnder18", "Female", "Other", "Owning", 
-                                  "Renting","Benefits", "Employed", "Retired", "Student", "F21", "F22&24", "F23", "F25", "F28", "F29", "F31.2&31.5", "Current Smoker", "Ex-smoker"))
-r<-r%>%dplyr::mutate(or = exp(Estimate))
-ci<-as.data.frame(exp(cbind("Odds ratio" = coef(r), confint.default(lm5, level = 0.95))))
-or<-data.frame(odds_ratio = r$or, ci_l=ci$`2.5 %`, ci_u=ci$`97.5 %`, row.names = c("Intercept", "Divorced", "Married", "AnyUnder18", "Female", "Other", "Owning", 
-                                                                                   "Renting","Benefits", "Employed", "Retired", "Student", "F21", "F22&24", "F23", "F25", "F28", "F29", "F31.2&31.5", "Current Smoker", "Ex-smoker"))
-
-
-#remove smoking
-#lm6<-glm(wardstay ~ 1 + Marital_Status_Value + Gender_Value + Accommodation + Employment + Diagnosis + AnyUnder18, data = file2, family = poisson)
-#summary(lm6)
-#AIC(lm6) #1432
-#rsq(lm6) #0.8255
-#rsq(lm6, adj = T) #-0.446
-
-###exploratory analysis - marital status*anyunder18
-
-lm5a<-glm(wardstay ~ 1 + Marital_Status_Value*AnyUnder18 + Gender_Value + Accommodation + Employment + Diagnosis + Smoking, data = file2, family = poisson)
-summary(lm5a)
-AIC(lm5a) #1303
-rsq(lm5a) #0.8343
-
-file2$AnyUnder18<-as.character(file2$AnyUnder18)
-ggplot(file2, aes(Marital_Status_Value, wardstay, fill = AnyUnder18)) + geom_bar(stat = "identity", position = "fill")
-ggplot(file2, aes(Marital_Status_Value, wardstay, fill = AnyUnder18)) + geom_bar(stat = "identity", position = "dodge")
-
-###exploratory analysis - gender*accommodation#######
-lm5b<-glm(wardstay ~ 1 + Marital_Status_Value*AnyUnder18 + Gender_Value*Accommodation + Employment + Diagnosis + Smoking, data = file2, family = poisson)
-summary(lm5b)
-AIC(lm5b) #1278.87
-rsq(lm5b) #0.8395
-
-ggplot(file2, aes(Gender_Value, wardstay)) + geom_jitter() + coord_cartesian(ylim = c(0, 10))
-ggplot(file2, aes(Accommodation, wardstay)) + geom_jitter() + coord_cartesiane(ylim = c(0, 10))
-
-ggplot(file2, aes(Accommodation, wardstay, fill = Gender_Value)) + geom_bar(stat = "identity", position = "fill")
-ggplot(file2, aes(Accommodation, wardstay, fill = Gender_Value)) + geom_bar(stat = "identity", position = "dodge")
-
-anova(lm5, lm5a, test = "Chisq")
-anova(lm5, lm5b, test = "Chisq")
-anova(lm5a, lm5b, test = "Chisq")
-
-
