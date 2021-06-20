@@ -523,10 +523,9 @@ vif(lm5)
 ###exploratory analysis - diagnosis*ethnicity########
 lm4a<-glm(Has_children ~ 1 + Marital_Status_Value + Gender_Value + Diagnosis*Ethnicity_Value + Accommodation + Employment + Smoking, data = file1, family = binomial)
 summary(lm4a)
-AIC(lm4a) #573
-rsq(lm4a) #0.9372
+AIC(lm4a) 
 
-anova(lm4, lm4a, test = "Chisq") #p = 0.7478 so it looks like the less complicated model (without the interaction) is preferred.
+anova(finallm1, lm4a, test = "Chisq") #p = 0.7478 so it looks like the less complicated model (without the interaction) is preferred.
 
 ###LINEAR MODELLING - Has_children under 18###################
 y<-file1%>%filter(OU18_1 == "Under"|OU18_2 == "Under"|OU18_3 == "Under"|OU18_4 == "Under"|OU18_5 == "Under"|OU18_6 == "Under"|OU18_7 == "Under"|OU18_8 == "Under"|OU18_9 == "Under"|OU18_10 == "Under"|OU18_11 == "Under"|OU18_12 == "Under")
