@@ -323,7 +323,7 @@ chisq<-chisq.test(accommodationtest)
           
           #data:  accommodationtest
           #X-squared = 188.41, df = 4, p-value < 2.2e-16
-Í
+Ã
 #withoutmissing
 accommodationtest<-accommodationtest[1:4, ]
 chisq<-chisq.test(accommodationtest)
@@ -518,7 +518,7 @@ or<-data.frame(odds_ratio = r$or, ci_l=ci$`2.5 %`, ci_u=ci$`97.5 %`, row.names =
 
 ###check assumptions########
 
-vif(lm5) #Ethnicity Values have high VIFs
+vif(lm5) 
 
 ###exploratory analysis - diagnosis*ethnicity########
 lm4a<-glm(Has_children ~ 1 + Marital_Status_Value + Gender_Value + Diagnosis*Ethnicity_Value + Accommodation + Employment + Smoking, data = file1, family = binomial)
