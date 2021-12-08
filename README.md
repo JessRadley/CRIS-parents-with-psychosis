@@ -33,5 +33,5 @@ The same binomial regression was run but comparing non-parents to parents of dep
 
 ## Missing data
 
-One of the peer reviewers in SPPE asked me why I hadn't used a more robust method to handle the missing data in this sample. I originally had thought you could not use multiple imputation for files with large amounts of missing data, but after reading up on it (e.g. van Ginkel et al., 2020), it seemed like it was possible. Therefore, imputed missing data before running the regression analyses, using 'pmm' for the numeric variables and 'polyreg' for the factors.
+One of the peer reviewers in SPPE asked me why I hadn't used a more robust method to handle the missing data in this sample. I originally had thought you could not use multiple imputation for files with large amounts of missing data, but after reading up on it (e.g. van Ginkel et al., 2020), it seemed like it was possible. Therefore, imputed missing data before running the regression analyses, using 'pmm' for the numeric variables and 'polyreg' for the factors. The reviewer also noted that stepwise regresssion should not be used for model selection so I kept all variables in each model and reported the odds ratios, confidence intervals and p-values.
 
