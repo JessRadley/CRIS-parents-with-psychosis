@@ -31,3 +31,7 @@ Then before the binomial regression was run, the variables were converted into f
 
 The same binomial regression was run but comparing non-parents to parents of dependants (i.e. parents of non-dependants were excluded from this analysis). A stepwise test was run which resulted in only ethnicity being removed. Odds ratios were calculated again. An exploratory analysis between diagnosis and current age was run but this did not improve the model.
 
+## Missing data
+
+One of the peer reviewers in SPPE asked me why I hadn't used a more robust method to handle the missing data in this sample. I originally had thought you could not use multiple imputation for files with large amounts of missing data, but after reading up on it (e.g. van Ginkel et al., 2020), it seemed like it was possible. Therefore, imputed missing data before running the regression analyses, using 'pmm' for the numeric variables and 'polyreg' for the factors.
+
