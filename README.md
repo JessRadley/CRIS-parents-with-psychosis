@@ -31,7 +31,11 @@ Then before the binomial regression was run, the variables were converted into f
 
 The same binomial regression was run but comparing non-parents to parents of dependants (i.e. parents of non-dependants were excluded from this analysis). A stepwise test was run which resulted in only ethnicity being removed. Odds ratios were calculated again. An exploratory analysis between diagnosis and current age was run but this did not improve the model.
 
-## Missing data
+## Survival analysis
 
-One of the peer reviewers in SPPE asked me why I hadn't used a more robust method to handle the missing data in this sample. I originally had thought you could not use multiple imputation for files with large amounts of missing data, but after reading up on it (e.g. van Ginkel et al., 2020), it seemed like it was possible. Therefore, imputed missing data before running the regression analyses, using 'pmm' for the numeric variables and 'polyreg' for the factors. The reviewer also noted that stepwise regresssion should not be used for model selection so I kept all variables in each model and reported the odds ratios, confidence intervals and p-values.
+I'd forgotten to clean patient's diagnosis alongside the other characteristics so i did that at the beginning of this file. I read in the file which contained all patients' ward stays and I checked this file for errors and counts. I created a variable called 'presence_of_WS' to indiate whether participants had a ward stay or not. Then I joined this ward stay file to the main file. I created some a child-related variable called 'child_born_inb' which calculcated whether a child was born in between ward stays, which I didn't end up using because there was too much missing data. I also made a new variable called 'anyunder18' which calculates whether a parent has any child under 18 (or whether all are over 18).
+
+Then I run a survival analysis with all of these variables. A backwards stepwise regression using AIC indicated that all should be tkaen out except age, marital status, diagnosis and smoking.
+
+The final bit of the code is creating Kaplan Meier figures.
 
